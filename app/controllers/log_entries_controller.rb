@@ -9,16 +9,48 @@ class LogEntriesController < ApplicationController
 
   def create
     parse_date
-    LogEntry.create!(user: current_user, day: @date, details: params.require(:details))
+    do_create_or_update
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+  end
+
+  def edit
+    parse_date
+    @entry = LogEntry.where(user: current_user, day: @date).first
+    render action: :new
+  end
+
+  def update
+    parse_date
+    entry = LogEntry.where(user: current_user, day: @date).first
+    do_create_or_update(entry)
+    redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+  end
+
+  def destroy
+    parse_date
+    @entry = LogEntry.where(user: current_user, day: @date).first
+    @entry.destroy! if @entry
+    redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+  end
+
+  def jump_to_month
+    year = params.require(:date).require(:year).to_i
+    month_num = params.require(:date).require(:month).to_i
+    redirect_to month_path(year: year, month: Date::MONTHNAMES[month_num])
   end
 
   def month
     @year = params.require(:year)
     @month = params.require(:month)
-
-    now = Date.today
     date = Date.strptime("#{@month} 1, #{@year}", '%B %d, %Y')
+
+    @now = Date.today
+    @previous_month = date - 1.month
+    @next_month = date + 1.month
+
+    @first_year = (first_year_for_user(current_user) || @now.year) - 1
+    @last_year = (last_year_for_user(current_user) || @now.year) + 1
+
     month_num = date.month
 
     date_to_entry = {}
@@ -37,9 +69,9 @@ class LogEntriesController < ApplicationController
 
       if entry.nil?
         td_class = nil
-      elsif date > now
+      elsif date > @now
         td_class = 'future'
-      elsif date < now
+      elsif date < @now
         td_class = 'past'
       else
         td_class = 'present'
@@ -61,5 +93,25 @@ class LogEntriesController < ApplicationController
       params.require(:month).to_i,
       params.require(:day).to_i,
     )
+  end
+
+  def do_create_or_update(entry: nil)
+    if entry
+      entry.update(details: params.require(:details))
+    else
+      entry = LogEntry.create(user: current_user, day: @date, details: params.require(:details))
+    end
+    if !entry.valid?
+      flash[:alert] = "Entry not saved. #{entry.errors.full_messages.first}"
+      puts 'should flash...'
+    end
+  end
+
+  def first_year_for_user(user)
+    LogEntry.where(user: user).minimum(:day).try(:year)
+  end
+
+  def last_year_for_user(user)
+    LogEntry.where(user: user).maximum(:day).try(:year)
   end
 end

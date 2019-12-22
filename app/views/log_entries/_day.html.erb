@@ -1,9 +1,12 @@
 <td class="<%= day.try(:third) %>">
   <% if day %>
     <span class="dayOfMonth"><%= day.first.day %></span>
-    <%= day.second %>
+    <%= day.second.try(:html_safe) %>
     <% if day.second %>
-      (edit/delete)
+      <%= link_to 'Edit', edit_log_entry_path(year: day.first.year, month: day.first.month,
+        day: day.first.day) %>
+      <%= link_to 'Delete', delete_log_entry_path(year: day.first.year, month: day.first.month,
+        day: day.first.day), method: :delete, data: { confirm: "Are you sure?" } %>
     <% else %>
       <%= link_to 'Create entry', new_log_entry_path(year: day.first.year,
         month: day.first.month, day: day.first.day) %>
