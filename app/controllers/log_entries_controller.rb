@@ -9,7 +9,31 @@ class LogEntriesController < ApplicationController
 
   def create
     parse_date
-    LogEntry.create!(user: current_user, day: @date, details: params.require(:details))
+    do_create
+    redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+  end
+
+  def edit
+    parse_date
+    @entry = LogEntry.where(user: current_user, day: @date).first
+    render action: :new
+  end
+
+  def update
+    parse_date
+    @entry = LogEntry.where(user: current_user, day: @date).first
+    if @entry
+      @entry.update!(details: params.require(:details))
+    else
+      do_create
+    end
+    redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+  end
+
+  def destroy
+    parse_date
+    @entry = LogEntry.where(user: current_user, day: @date).first
+    @entry.destroy! if @entry
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
   end
 
@@ -61,5 +85,9 @@ class LogEntriesController < ApplicationController
       params.require(:month).to_i,
       params.require(:day).to_i,
     )
+  end
+
+  def do_create
+    LogEntry.create!(user: current_user, day: @date, details: params.require(:details))
   end
 end
