@@ -1,0 +1,26 @@
+<p>
+  <%= link_to 'Edit', month_path(month: 'December', year: 2019) %> your individual workout log (month-by-month view).
+</p>
+
+<% if current_user.teams.present? %>
+<p>
+  View your entire team's workout log (week-by-week view):
+  <ul>
+    <% current_user.teams.each do |team| %>
+      <li><%= team.name %> (unregister)
+    <% end %>
+  </ul>
+</p>
+<% end %>
+
+<p>
+  View all your teams at once
+</p>
+
+<p>
+  Create a new team
+</p>
+
+<p>
+  Register with an existing team
+</p>
