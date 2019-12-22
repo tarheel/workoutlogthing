@@ -95,7 +95,7 @@ class LogEntriesController < ApplicationController
     )
   end
 
-  def do_create_or_update(entry: nil)
+  def do_create_or_update(entry = nil)
     if entry
       entry.update(details: params.require(:details))
     else
