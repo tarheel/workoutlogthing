@@ -1,0 +1,14 @@
+<td class="<%= day.try(:third) %>">
+  <% if day %>
+    <span class="dayOfMonth"><%= day.first.day %></span>
+    <%= day.second %>
+    <% if day.second %>
+      (edit/delete)
+    <% else %>
+      <%= link_to 'Create entry', new_log_entry_path(year: day.first.year,
+        month: day.first.month, day: day.first.day) %>
+    <% end %>
+  <% else %>
+    &nbsp;
+  <% end %>
+</td>

@@ -1,0 +1,26 @@
+table.entries {
+  table-layout: fixed;
+
+  th {
+    text-align: center;
+    background-color: #fab870;
+  }
+  td {
+    vertical-align: top;
+    font-size: x-small;
+
+    span.dayOfMonth {
+      font-size: medium;
+      font-weight: bold;
+    }
+  }
+  td.past {
+    background-color: #65b2fe;
+  }
+  td.present {
+    background-color: #f7901e;
+  }
+  td.future {
+    background-color: #fab870;
+  }
+}

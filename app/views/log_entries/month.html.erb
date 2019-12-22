@@ -1,0 +1,22 @@
+<p>
+  <%= link_to 'Main menu', root_path %>
+</p>
+
+<h3>
+  <%= @month %> <%= @year %>: <%= current_user.name %>
+</h3>
+
+<table width="100%" border="1" cellspacing="1" cellpadding="1" class="entries">
+  <tr>
+    <% Date::DAYNAMES.each do |day| %>
+      <th><%= day %></th>
+    <% end %>
+  </tr>
+  <% @table_data.each do |week| %>
+    <tr>
+      <% week.each do |day| %>
+        <%= render partial: 'log_entries/day', locals: {day: day} %>
+      <% end %>
+    </tr>
+  <% end %>
+</table>

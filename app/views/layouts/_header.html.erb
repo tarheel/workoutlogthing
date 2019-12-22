@@ -1,0 +1,11 @@
+<div style="text-align: center">
+  <h1>Workout Log</h1>
+  <% if current_user %>
+    <div style="font-size: 8pt">
+      You are signed in as <%= current_user.name %>.
+      <br />
+      Not <%= current_user.name %>?
+      <%= link_to('Sign out', destroy_user_session_path, method: :delete) %>
+    </div>
+  <% end %>
+</div>
