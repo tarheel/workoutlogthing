@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   get 'month/:year/:month', to: 'log_entries#month', as: :month
+  get 'jump_to_month', to: 'log_entries#jump_to_month', as: :jump_to_month
   get 'log_entries/:year/:month/:day/new', to: 'log_entries#new', as: :new_log_entry
   get 'log_entries/:year/:month/:day/edit', to: 'log_entries#edit', as: :edit_log_entry
   delete 'log_entries/:year/:month/:day/delete', to: 'log_entries#destroy', as: :delete_log_entry

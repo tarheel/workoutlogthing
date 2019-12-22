@@ -5,7 +5,21 @@
 <h3>
   <%= @month %> <%= @year %>: <%= current_user.name %>
 </h3>
-
+<p>
+  <%= link_to 'Previous month', month_path(year: @previous_month.year,
+    month: @previous_month.strftime('%B')) %>
+  ...
+  <%= link_to 'Next month', month_path(year: @next_month.year,
+    month: @next_month.strftime('%B')) %>
+</p>
+<p>
+  <%= form_tag jump_to_month_path, method: :get do %>
+    Jump to:
+    <%= select_month(@now) %>
+    <%= select_year(@now, start_year: @first_year, end_year: @last_year) %>
+    <%= submit_tag 'Go' %>
+  <% end %>
+</p>
 <table width="100%" border="1" cellspacing="1" cellpadding="1" class="entries">
   <tr>
     <% Date::DAYNAMES.each do |day| %>

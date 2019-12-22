@@ -37,12 +37,24 @@ class LogEntriesController < ApplicationController
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
   end
 
+  def jump_to_month
+    year = params.require(:date).require(:year).to_i
+    month_num = params.require(:date).require(:month).to_i
+    redirect_to month_path(year: year, month: Date::MONTHNAMES[month_num])
+  end
+
   def month
     @year = params.require(:year)
     @month = params.require(:month)
-
-    now = Date.today
     date = Date.strptime("#{@month} 1, #{@year}", '%B %d, %Y')
+
+    @now = Date.today
+    @previous_month = date - 1.month
+    @next_month = date + 1.month
+
+    @first_year = (first_year_for_user(current_user) || @now.year) - 1
+    @last_year = (last_year_for_user(current_user) || @now.year) + 1
+
     month_num = date.month
 
     date_to_entry = {}
@@ -61,9 +73,9 @@ class LogEntriesController < ApplicationController
 
       if entry.nil?
         td_class = nil
-      elsif date > now
+      elsif date > @now
         td_class = 'future'
-      elsif date < now
+      elsif date < @now
         td_class = 'past'
       else
         td_class = 'present'
@@ -89,5 +101,13 @@ class LogEntriesController < ApplicationController
 
   def do_create
     LogEntry.create!(user: current_user, day: @date, details: params.require(:details))
+  end
+
+  def first_year_for_user(user)
+    LogEntry.where(user: user).minimum(:day).try(:year)
+  end
+
+  def last_year_for_user(user)
+    LogEntry.where(user: user).maximum(:day).try(:year)
   end
 end
