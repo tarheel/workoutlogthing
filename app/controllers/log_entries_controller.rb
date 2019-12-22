@@ -9,7 +9,7 @@ class LogEntriesController < ApplicationController
 
   def create
     parse_date
-    do_create
+    do_create_or_update
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
   end
 
@@ -21,12 +21,8 @@ class LogEntriesController < ApplicationController
 
   def update
     parse_date
-    @entry = LogEntry.where(user: current_user, day: @date).first
-    if @entry
-      @entry.update!(details: params.require(:details))
-    else
-      do_create
-    end
+    entry = LogEntry.where(user: current_user, day: @date).first
+    do_create_or_update(entry)
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
   end
 
@@ -99,8 +95,16 @@ class LogEntriesController < ApplicationController
     )
   end
 
-  def do_create
-    LogEntry.create!(user: current_user, day: @date, details: params.require(:details))
+  def do_create_or_update(entry: nil)
+    if entry
+      entry.update(details: params.require(:details))
+    else
+      entry = LogEntry.create(user: current_user, day: @date, details: params.require(:details))
+    end
+    if !entry.valid?
+      flash[:alert] = "Entry not saved. #{entry.errors.full_messages.first}"
+      puts 'should flash...'
+    end
   end
 
   def first_year_for_user(user)

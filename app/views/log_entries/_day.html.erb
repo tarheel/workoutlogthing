@@ -1,7 +1,7 @@
 <td class="<%= day.try(:third) %>">
   <% if day %>
     <span class="dayOfMonth"><%= day.first.day %></span>
-    <%= day.second %>
+    <%= day.second.try(:html_safe) %>
     <% if day.second %>
       <%= link_to 'Edit', edit_log_entry_path(year: day.first.year, month: day.first.month,
         day: day.first.day) %>
