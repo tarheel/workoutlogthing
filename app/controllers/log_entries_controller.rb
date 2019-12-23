@@ -85,6 +85,7 @@ class LogEntriesController < ApplicationController
     @users = User.
       joins(:teams_users).
       merge(TeamsUser.where(team: @teams)).
+      includes(:teams).
       order(:name).
       uniq
 

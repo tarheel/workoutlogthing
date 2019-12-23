@@ -31,6 +31,9 @@
     <tr>
       <td class="future">
         <%= user.name %>
+        <% if user != current_user && @teams.length > 1 %>
+          (<%= user.teams.select { |t| @teams.include?(t) }.map(&:name).join(', ') %>)
+        <% end %>
       </td>
       <% @table_data[user.id].each do |day| %>
         <%= render 'log_entries/day', day: day, editable: user == current_user,
