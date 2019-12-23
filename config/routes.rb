@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  resources :teams
-  devise_for :users #, controllers: { registrations: 'users/registrations' }
+  resources :teams, only: [:new, :create]
+  devise_for :users
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: "home#index"
@@ -12,6 +12,6 @@ Rails.application.routes.draw do
   delete 'log_entries/:year/:month/:day/delete', to: 'log_entries#destroy', as: :delete_log_entry
   delete 'team_memberships/:team_id/delete', to: 'teams_users#destroy', as: :delete_team_membership
 
-  resources :log_entries
-  resources :teams_users, path: :team_memberships, as: :team_memberships
+  resources :log_entries, only: [:new, :create, :edit, :update, :destroy]
+  resources :teams_users, only: [:new, :create, :destroy], path: :team_memberships, as: :team_memberships
 end

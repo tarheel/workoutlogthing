@@ -3,8 +3,8 @@ class Team < ApplicationRecord
 
   has_and_belongs_to_many :users
   validates_uniqueness_of :name
-  validates_uniqueness_of :encrypted_password
   validate :check_password_match
+  validate :unique_encrypted_password
   before_save :set_encrypted_password
 
   attr_accessor :team_password
@@ -26,5 +26,11 @@ class Team < ApplicationRecord
 
   def set_encrypted_password
     self.encrypted_password = self.class.encrypt_using_old_password(team_password) if team_password
+  end
+
+  def unique_encrypted_password
+    if team_password && self.class.find_by_password(team_password)
+      errors[:base] << 'Another team is already using this password.'
+    end
   end
 end

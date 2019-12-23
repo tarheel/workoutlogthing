@@ -15,8 +15,7 @@
       <% current_user.teams.each do |team| %>
         <li>
           <%= team.name %>
-          (<%= link_to 'unregister', delete_team_membership_path(team_id: team.id),
-            method: :delete, data: { confirm: "Are you sure?" } %>)
+          (<%= leave_team_link(team, 'unregister') %>)
         </li>
       <% end %>
     </ul>
@@ -29,7 +28,7 @@
         View your entire team's workout log (week-by-week view)
       </li>
       <li>
-        Unregister from your team
+        <%= leave_team_link(current_user.teams.first, 'Unregister') %> from your team
       </li>
     </ul>
   </li>
