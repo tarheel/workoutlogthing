@@ -1,4 +1,5 @@
 class TeamsController < ApplicationController
+  before_action :require_logged_in
   before_action :set_team, only: [:show, :edit, :update, :destroy]
 
   # GET /teams
@@ -26,14 +27,11 @@ class TeamsController < ApplicationController
   def create
     @team = Team.new(team_params)
 
-    respond_to do |format|
-      if @team.save
-        format.html { redirect_to @team, notice: 'Team was successfully created.' }
-        format.json { render :show, status: :created, location: @team }
-      else
-        format.html { render :new }
-        format.json { render json: @team.errors, status: :unprocessable_entity }
-      end
+    if @team.save
+      current_user.teams << @team
+      redirect_to root_path, notice: "You've successfully created and joined #{@team.name}."
+    else
+      render :new
     end
   end
 
@@ -67,8 +65,7 @@ class TeamsController < ApplicationController
       @team = Team.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def team_params
-      params.require(:team).permit(:name, :encrypted_password)
+      params.require(:team).permit(:name, :team_password, :confirm_team_password)
     end
 end

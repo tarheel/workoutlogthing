@@ -1,26 +1,44 @@
-<p>
-  <%= link_to 'Edit', month_path(month: 'December', year: 2019) %> your individual workout log (month-by-month view).
-</p>
+<ul>
+<li>
+  <%= link_to 'Edit', month_path(month: @now.strftime('%B'), year: @now.year) %> your individual
+  workout log (month-by-month view)
+</li>
 
 <% if current_user.teams.present? %>
-<p>
-  View your entire team's workout log (week-by-week view):
-  <ul>
-    <% current_user.teams.each do |team| %>
-      <li><%= team.name %> (unregister)
-    <% end %>
-  </ul>
-</p>
+  <% if current_user.teams.size > 1 %>
+  <li>
+    View all your teams at once
+  </li>
+  <li>
+    View an individual team:
+    <ul>
+      <% current_user.teams.each do |team| %>
+        <li><%= team.name %> (unregister)
+      <% end %>
+    </ul>
+  </li>
+  <% else %>
+  <li>
+    You're a member of <%= current_user.teams.first.name %>. You can:
+    <ul>
+      <li>
+        View your entire team's workout log (week-by-week view)
+      </li>
+      <li>
+        Unregister from your team
+      </li>
+    </ul>
+  </li>
+  <% end %>
 <% end %>
+<li>
+  <%= link_to 'Create', new_team_path %> a new team
+</li>
 
-<p>
-  View all your teams at once
-</p>
-
-<p>
-  Create a new team
-</p>
-
-<p>
+<li>
   Register with an existing team
-</p>
+</li>
+
+<li>
+  <%= link_to 'Update', edit_user_registration_path %> your account info
+</li>
