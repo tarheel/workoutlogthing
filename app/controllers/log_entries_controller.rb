@@ -1,35 +1,31 @@
 class LogEntriesController < ApplicationController
 
   before_action :require_logged_in
-  before_action :set_team, only: :team_week
+  before_action :set_teams, only: :team_week
   before_action :check_team_membership, only: :team_week
+  before_action :parse_entry_date, only: [:new, :create, :edit, :update, :destroy]
 
   def new
-    parse_date
     @entry = LogEntry.new(user: current_user, day: @date)
   end
 
   def create
-    parse_date
     do_create_or_update
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
   end
 
   def edit
-    parse_date
     @entry = LogEntry.where(user: current_user, day: @date).first
     render action: :new
   end
 
   def update
-    parse_date
     entry = LogEntry.where(user: current_user, day: @date).first
     do_create_or_update(entry)
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
   end
 
   def destroy
-    parse_date
     @entry = LogEntry.where(user: current_user, day: @date).first
     @entry.destroy! if @entry
     redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
@@ -79,17 +75,21 @@ class LogEntriesController < ApplicationController
   end
 
   def team_week
-    @start_date = Date.parse(params.require(:date))
+    @start_date = parse_week_date
     @now = Date.today
 
-    @users = @team.users.order(:name)
+    # Not sure how to do this in ActiveRecord without the subquery. :(
+    @users = User.
+      joins(:teams_users).
+      merge(TeamsUser.where(team: @teams)).
+      order(:name).
+      uniq
 
     entries = LogEntry.
+      where(user_id: @users.map(&:id)).
       where('day >= ?', @start_date).
       where('day < ?', @start_date + 7.days).
-      joins(:user).
-      includes(:user).
-      merge(@team.users)
+      includes(:user)
     entries_map = Hash.new { |h, k| h[k] = {} }
     entries.each { |entry| entries_map[entry.user_id][entry.day.to_s] = entry.details }
 
@@ -123,7 +123,11 @@ class LogEntriesController < ApplicationController
     end
   end
 
-  def parse_date
+  def parse_week_date
+    params.require(:date) == 'now' ? Date.today - 3.days : Date.parse(params.require(:date))
+  end
+
+  def parse_entry_date
     @date = Date.new(
       params.require(:year).to_i,
       params.require(:month).to_i,
@@ -150,12 +154,16 @@ class LogEntriesController < ApplicationController
     LogEntry.where(user: user).maximum(:day).try(:year)
   end
 
-  def set_team
-    @team = Team.find(params.require(:team_id))
+  def set_teams
+    if params.require(:team_id) == 'all'
+      @teams = current_user.teams
+    else
+      @teams = Team.where(id: params.require(:team_id))
+    end
   end
 
   def check_team_membership
-    if !current_user.teams.include?(@team)
+    if params.require(:team_id) != 'all' && !current_user.teams.include?(@teams.first)
       redirect_to root_path, alert: 'You\'re not a member of this team.'
     end
   end

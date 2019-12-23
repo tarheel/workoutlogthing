@@ -3,7 +3,11 @@
 </p>
 
 <h3>
-  <%= @team.name %>
+  <% if @teams.length > 1 %>
+    My Teams (<%= @teams.map(&:name).join(', ') %>)
+  <% else %>
+    <%= @teams.first.name %>
+  <% end %>
 </h3>
 
 <h4>
@@ -11,9 +15,9 @@
 </h4>
 
 <p>
-  <%= link_to 'Previous week', team_week_path(team_id: @team.id, date: @start_date - 1.week) %>
+  <%= link_to 'Previous week', team_week_path(team_id: params[:team_id], date: @start_date - 1.week) %>
   ...
-  <%= link_to 'Next week', team_week_path(team_id: @team.id, date: @start_date + 1.week) %>
+  <%= link_to 'Next week', team_week_path(team_id: params[:team_id], date: @start_date + 1.week) %>
 </p>
 
 <table width="100%" border="1" cellspacing="1" cellpadding="1" class="entries">

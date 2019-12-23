@@ -1,7 +1,8 @@
 class Team < ApplicationRecord
   extend OldPasswords
 
-  has_and_belongs_to_many :users
+  has_many :teams_users
+  has_many :users, through: :teams_users
   validates_uniqueness_of :name
   validate :check_password_match
   validate :unique_encrypted_password

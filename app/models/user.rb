@@ -6,7 +6,8 @@ class User < ApplicationRecord
   validate :check_team_password, on: :create
   validates_uniqueness_of :name
 
-  has_and_belongs_to_many :teams
+  has_many :teams_users
+  has_many :teams, through: :teams_users
 
   after_create :join_team
 

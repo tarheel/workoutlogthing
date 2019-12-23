@@ -7,14 +7,14 @@
 <% if current_user.teams.present? %>
   <% if current_user.teams.size > 1 %>
   <li>
-    View all your teams at once
+    <%= link_to 'View', team_week_path(team_id: 'all', date: 'now') %> all your teams at once
   </li>
   <li>
     View an individual team:
     <ul>
       <% current_user.teams.each do |team| %>
         <li>
-          <%= link_to team.name, team_week_path(team_id: team.id, date: @now - 3.days) %>
+          <%= link_to team.name, team_week_path(team_id: team.id, date: 'now') %>
           (<%= leave_team_link(team, 'unregister') %>)
         </li>
       <% end %>
@@ -25,7 +25,7 @@
     You're a member of <%= current_user.teams.first.name %>. You can:
     <ul>
       <li>
-        <%= link_to 'View', team_week_path(team_id: current_user.teams.first.id, date: @now - 3.days) %>
+        <%= link_to 'View', team_week_path(team_id: current_user.teams.first.id, date: 'now') %>
         your entire team's workout log (week-by-week view)
       </li>
       <li>
