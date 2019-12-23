@@ -1,17 +1,15 @@
 <td class="<%= day.try(:third) %>">
   <% if day %>
+    <% params = @return_params.merge(year: day.first.year, month: day.first.month, day: day.first.day) %>
     <% if show_day_num %>
       <span class="dayOfMonth"><%= day.first.day %></span>
     <% end %>
     <%= day.second.try(:html_safe) %>
     <% if editable && day.second %>
-      <%= link_to 'Edit', edit_log_entry_path(year: day.first.year, month: day.first.month,
-        day: day.first.day) %>
-      <%= link_to 'Delete', delete_log_entry_path(year: day.first.year, month: day.first.month,
-        day: day.first.day), method: :delete, data: { confirm: "Are you sure?" } %>
+      <%= link_to 'Edit', edit_log_entry_path(params) %>
+      <%= link_to 'Delete', delete_log_entry_path(params), method: :delete, data: { confirm: "Are you sure?" } %>
     <% elsif editable %>
-      <%= link_to 'Create entry', new_log_entry_path(year: day.first.year,
-        month: day.first.month, day: day.first.day) %>
+      <%= link_to 'Create entry', new_log_entry_path(params) %>
     <% end %>
   <% else %>
     &nbsp;

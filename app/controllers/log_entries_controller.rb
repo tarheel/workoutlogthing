@@ -11,7 +11,7 @@ class LogEntriesController < ApplicationController
 
   def create
     do_create_or_update
-    redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+    redirect_to_month_or_week
   end
 
   def edit
@@ -22,13 +22,13 @@ class LogEntriesController < ApplicationController
   def update
     entry = LogEntry.where(user: current_user, day: @date).first
     do_create_or_update(entry)
-    redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+    redirect_to_month_or_week
   end
 
   def destroy
     @entry = LogEntry.where(user: current_user, day: @date).first
     @entry.destroy! if @entry
-    redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+    redirect_to_month_or_week
   end
 
   def jump_to_month
@@ -42,6 +42,7 @@ class LogEntriesController < ApplicationController
     @month = params.require(:month)
     date = Date.strptime("#{@month} 1, #{@year}", '%B %d, %Y')
 
+    @return_params = {} # only needed for team_week view
     @now = Date.today
     @previous_month = date - 1.month
     @next_month = date + 1.month
@@ -78,6 +79,8 @@ class LogEntriesController < ApplicationController
     @start_date = parse_week_date
     @now = Date.today
 
+    @return_params = { from_team_id: params[:team_id], from_date: params[:date] }
+
     # Not sure how to do this in ActiveRecord without the subquery. :(
     @users = User.
       joins(:teams_users).
@@ -110,6 +113,14 @@ class LogEntriesController < ApplicationController
   end
 
   private
+
+  def redirect_to_month_or_week
+    if params[:from_team_id] && params[:from_date]
+      redirect_to team_week_path(team_id: params[:from_team_id], date: params[:from_date])
+    else
+      redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+    end
+  end
 
   def get_td_class(entry, date)
     if entry.nil?
