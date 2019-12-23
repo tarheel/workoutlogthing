@@ -13,7 +13,11 @@
     View an individual team:
     <ul>
       <% current_user.teams.each do |team| %>
-        <li><%= team.name %> (unregister)
+        <li>
+          <%= team.name %>
+          (<%= link_to 'unregister', delete_team_membership_path(team_id: team.id),
+            method: :delete, data: { confirm: "Are you sure?" } %>)
+        </li>
       <% end %>
     </ul>
   </li>
@@ -36,7 +40,7 @@
 </li>
 
 <li>
-  Register with an existing team
+  <%= link_to 'Join', new_team_membership_path %> an existing team
 </li>
 
 <li>
