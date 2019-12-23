@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_22_003230) do
+ActiveRecord::Schema.define(version: 2019_12_22_234047) do
 
   create_table "log_entries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -21,10 +21,12 @@ ActiveRecord::Schema.define(version: 2019_12_22_003230) do
   end
 
   create_table "teams", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
-    t.string "encrypted_password"
+    t.string "name", null: false
+    t.string "encrypted_password", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["encrypted_password"], name: "index_teams_on_encrypted_password", unique: true
+    t.index ["name"], name: "index_teams_on_name", unique: true
   end
 
   create_table "teams_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|

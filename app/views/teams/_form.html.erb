@@ -12,13 +12,18 @@
   <% end %>
 
   <div class="field">
-    <%= form.label :name %>
+    <%= form.label :name %>:
     <%= form.text_field :name %>
   </div>
 
   <div class="field">
-    <%= form.label :encrypted_password %>
-    <%= form.text_field :encrypted_password %>
+    <%= form.label :team_password %>:
+    <%= form.text_field :team_password %> <em>Choose a password that people will use to join your team.</em>
+  </div>
+
+  <div class="field">
+    <%= form.label :confirm_team_password %>:
+    <%= form.text_field :confirm_team_password %>
   </div>
 
   <div class="actions">

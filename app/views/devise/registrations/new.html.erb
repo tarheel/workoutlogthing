@@ -5,12 +5,12 @@
 
   <div class="field">
     <%= f.label :email %>:
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <%= f.email_field :email, autofocus: true, size:40, autocomplete: "email" %>
   </div>
 
   <div class="field">
     <%= f.label :name %>:
-    <%= f.text_field :name, autocomplete: "name" %>
+    <%= f.text_field :name, autocomplete: "name" %> <em>(first and last)</em>
   </div>
 
   <div class="field">
@@ -25,6 +25,11 @@
   <div class="field">
     <%= f.label :password_confirmation %>:
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :team_password %>:
+    <%= f.text_field :team_password %> <em>(if you've already been invited to a team)</em>
   </div>
 
   <div class="actions">
