@@ -10,7 +10,8 @@ Rails.application.routes.draw do
   get 'log_entries/:year/:month/:day/new', to: 'log_entries#new', as: :new_log_entry
   get 'log_entries/:year/:month/:day/edit', to: 'log_entries#edit', as: :edit_log_entry
   delete 'log_entries/:year/:month/:day/delete', to: 'log_entries#destroy', as: :delete_log_entry
+  delete 'team_memberships/:team_id/delete', to: 'teams_users#destroy', as: :delete_team_membership
 
   resources :log_entries
-  #post 'log_entr', to: 'log_entries#create', as: :log_entry
+  resources :teams_users, path: :team_memberships, as: :team_memberships
 end

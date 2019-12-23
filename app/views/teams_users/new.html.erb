@@ -1,0 +1,17 @@
+<h2>Join a Team</h2>
+
+<%= form_with(model: @teams_user, url: team_memberships_path) do |f| %>
+  <% if @teams_user.errors.any? %>
+    <div id="error_explanation">
+      <%= @teams_user.errors.full_messages.first %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :team_password %>:
+    <%= f.text_field :team_password %>
+    <%= f.submit 'Join' %>
+  </div>
+<% end %>
+
+<%= link_to 'Back', root_path %>
