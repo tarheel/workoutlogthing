@@ -1,6 +1,8 @@
 class LogEntriesController < ApplicationController
 
   before_action :require_logged_in
+  before_action :set_team, only: :team_week
+  before_action :check_team_membership, only: :team_week
 
   def new
     parse_date
@@ -67,25 +69,59 @@ class LogEntriesController < ApplicationController
 
       entry = date_to_entry[date]
 
-      if entry.nil?
-        td_class = nil
-      elsif date > @now
-        td_class = 'future'
-      elsif date < @now
-        td_class = 'past'
-      else
-        td_class = 'present'
-      end
       @table_data.last[date.wday] = [
         date,
         entry,
-        td_class,
+        get_td_class(entry, date),
       ]
       date = date.next
     end
   end
 
+  def team_week
+    @start_date = Date.parse(params.require(:date))
+    @now = Date.today
+
+    @users = @team.users.order(:name)
+
+    entries = LogEntry.
+      where('day >= ?', @start_date).
+      where('day < ?', @start_date + 7.days).
+      joins(:user).
+      includes(:user).
+      merge(@team.users)
+    entries_map = Hash.new { |h, k| h[k] = {} }
+    entries.each { |entry| entries_map[entry.user_id][entry.day.to_s] = entry.details }
+
+    @table_data = @users.each_with_object({}) do |user, memo|
+      row = Array.new(7)
+      user_map = entries_map[user.id]
+      (0..6).each do |i|
+        date = @start_date + i.days
+        entry = user_map && user_map[date.to_s]
+        row[i] = [
+          date,
+          entry,
+          get_td_class(entry, date),
+        ]
+      end
+      memo[user.id] = row
+    end
+  end
+
   private
+
+  def get_td_class(entry, date)
+    if entry.nil?
+      nil
+    elsif date > @now
+      'future'
+    elsif date < @now
+      'past'
+    else
+      'present'
+    end
+  end
 
   def parse_date
     @date = Date.new(
@@ -103,7 +139,6 @@ class LogEntriesController < ApplicationController
     end
     if !entry.valid?
       flash[:alert] = "Entry not saved. #{entry.errors.full_messages.first}"
-      puts 'should flash...'
     end
   end
 
@@ -113,5 +148,15 @@ class LogEntriesController < ApplicationController
 
   def last_year_for_user(user)
     LogEntry.where(user: user).maximum(:day).try(:year)
+  end
+
+  def set_team
+    @team = Team.find(params.require(:team_id))
+  end
+
+  def check_team_membership
+    if !current_user.teams.include?(@team)
+      redirect_to root_path, alert: 'You\'re not a member of this team.'
+    end
   end
 end

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   get 'month/:year/:month', to: 'log_entries#month', as: :month
+  get 'week/:team_id/:date', to: 'log_entries#team_week', as: :team_week
   get 'jump_to_month', to: 'log_entries#jump_to_month', as: :jump_to_month
   get 'log_entries/:year/:month/:day/new', to: 'log_entries#new', as: :new_log_entry
   get 'log_entries/:year/:month/:day/edit', to: 'log_entries#edit', as: :edit_log_entry

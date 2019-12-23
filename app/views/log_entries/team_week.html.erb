@@ -1,0 +1,37 @@
+<p>
+  <%= link_to 'Main menu', root_path %>
+</p>
+
+<h3>
+  <%= @team.name %>
+</h3>
+
+<h4>
+  <%= full_date_string(@start_date) %> - <%= full_date_string(@start_date + 6.days) %>
+</h4>
+
+<p>
+  <%= link_to 'Previous week', team_week_path(team_id: @team.id, date: @start_date - 1.week) %>
+  ...
+  <%= link_to 'Next week', team_week_path(team_id: @team.id, date: @start_date + 1.week) %>
+</p>
+
+<table width="100%" border="1" cellspacing="1" cellpadding="1" class="entries">
+  <tr>
+    <th>&nbsp;</th>
+    <% (0..6).each do |i| %>
+      <th class="small"><%= (@start_date + i.days).strftime('%A, %B %-d') %></th>
+    <% end %>
+  </tr>
+  <% @users.each do |user| %>
+    <tr>
+      <td class="future">
+        <%= user.name %>
+      </td>
+      <% @table_data[user.id].each do |day| %>
+        <%= render 'log_entries/day', day: day, editable: user == current_user,
+          show_day_num: false %>
+      <% end %>
+    </tr>
+  <% end %>
+</table>

@@ -12,6 +12,7 @@
   <%= link_to 'Next month', month_path(year: @next_month.year,
     month: @next_month.strftime('%B')) %>
 </p>
+
 <p>
   <%= form_tag jump_to_month_path, method: :get do %>
     Jump to:
@@ -20,6 +21,7 @@
     <%= submit_tag 'Go' %>
   <% end %>
 </p>
+
 <table width="100%" border="1" cellspacing="1" cellpadding="1" class="entries">
   <tr>
     <% Date::DAYNAMES.each do |day| %>
@@ -29,7 +31,7 @@
   <% @table_data.each do |week| %>
     <tr>
       <% week.each do |day| %>
-        <%= render partial: 'log_entries/day', locals: {day: day} %>
+        <%= render 'log_entries/day', day: day, editable: true, show_day_num: true %>
       <% end %>
     </tr>
   <% end %>

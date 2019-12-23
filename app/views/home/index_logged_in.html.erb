@@ -14,7 +14,7 @@
     <ul>
       <% current_user.teams.each do |team| %>
         <li>
-          <%= team.name %>
+          <%= link_to team.name, team_week_path(team_id: team.id, date: @now - 3.days) %>
           (<%= leave_team_link(team, 'unregister') %>)
         </li>
       <% end %>
@@ -25,7 +25,8 @@
     You're a member of <%= current_user.teams.first.name %>. You can:
     <ul>
       <li>
-        View your entire team's workout log (week-by-week view)
+        <%= link_to 'View', team_week_path(team_id: current_user.teams.first.id, date: @now - 3.days) %>
+        your entire team's workout log (week-by-week view)
       </li>
       <li>
         <%= leave_team_link(current_user.teams.first, 'Unregister') %> from your team
