@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: "home#index"
 
-  get 'month/:year/:month', to: 'log_entries#month', as: :month
+  get 'users/:user_id/month/:year/:month', to: 'log_entries#month', as: :month
   get 'team/:team_id/week/:date', to: 'log_entries#team_week', as: :team_week
   get 'jump_to_month', to: 'log_entries#jump_to_month', as: :jump_to_month
   get 'log_entries/:year/:month/:day/new', to: 'log_entries#new', as: :new_log_entry

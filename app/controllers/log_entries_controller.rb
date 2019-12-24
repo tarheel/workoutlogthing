@@ -3,6 +3,7 @@ class LogEntriesController < ApplicationController
   before_action :require_logged_in
   before_action :set_teams, only: :team_week
   before_action :check_team_membership, only: :team_week
+  before_action :check_is_teammate_or_self, only: :month
   before_action :parse_entry_date, only: [:new, :create, :edit, :update, :destroy]
 
   def new
@@ -34,10 +35,12 @@ class LogEntriesController < ApplicationController
   def jump_to_month
     year = params.require(:date).require(:year).to_i
     month_num = params.require(:date).require(:month).to_i
-    redirect_to month_path(year: year, month: Date::MONTHNAMES[month_num])
+    user_id = params.require(:user_id)
+    redirect_to month_path(user_id: user_id, year: year, month: Date::MONTHNAMES[month_num])
   end
 
   def month
+    @user = User.find(params.require(:user_id))
     @year = params.require(:year)
     @month = params.require(:month)
     date = Date.strptime("#{@month} 1, #{@year}", '%B %d, %Y')
@@ -54,7 +57,7 @@ class LogEntriesController < ApplicationController
 
     date_to_entry = {}
     entries = LogEntry.
-      where(user: current_user).
+      where(user: @user).
       where('day >= ?', date).
       where('day < ?', date + 1.month)
     entries.each { |entry| date_to_entry[entry.day] = entry.details }
@@ -119,7 +122,7 @@ class LogEntriesController < ApplicationController
     if params[:from_team_id] && params[:from_date]
       redirect_to team_week_path(team_id: params[:from_team_id], date: params[:from_date])
     else
-      redirect_to month_path(year: @date.year, month: @date.strftime('%B'))
+      redirect_to month_path(user_id: current_user.id, year: @date.year, month: @date.strftime('%B'))
     end
   end
 
@@ -177,6 +180,15 @@ class LogEntriesController < ApplicationController
   def check_team_membership
     if params.require(:team_id) != 'all' && !current_user.teams.include?(@teams.first)
       redirect_to root_path, alert: 'You\'re not a member of this team.'
+    end
+  end
+
+  def check_is_teammate_or_self
+    if (
+      params.require(:user_id) != current_user.id &&
+      (current_user.teams & User.find(params[:user_id]).teams).empty?
+    )
+      redirect_to root_path, alert: 'You don\'t have permission to view this user.'
     end
   end
 end

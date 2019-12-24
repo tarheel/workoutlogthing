@@ -3,19 +3,20 @@
 </p>
 
 <h3>
-  <%= @month %> <%= @year %>: <%= current_user.name %>
+  <%= @month %> <%= @year %>: <%= @user.name %>
 </h3>
 <p>
   <%= link_to 'Previous month', month_path(year: @previous_month.year,
-    month: @previous_month.strftime('%B')) %>
+    month: @previous_month.strftime('%B'), user_id: @user.id) %>
   ...
   <%= link_to 'Next month', month_path(year: @next_month.year,
-    month: @next_month.strftime('%B')) %>
+    month: @next_month.strftime('%B'), user_id: @user.id) %>
 </p>
 
 <p>
   <%= form_tag jump_to_month_path, method: :get do %>
     Jump to:
+    <%= hidden_field_tag(:user_id, @user.id) %>
     <%= select_month(@now) %>
     <%= select_year(@now, start_year: @first_year, end_year: @last_year) %>
     <%= submit_tag 'Go' %>
@@ -31,7 +32,7 @@
   <% @table_data.each do |week| %>
     <tr>
       <% week.each do |day| %>
-        <%= render 'log_entries/day', day: day, editable: true, show_day_num: true %>
+        <%= render 'log_entries/day', day: day, editable: @user == current_user, show_day_num: true %>
       <% end %>
     </tr>
   <% end %>
