@@ -30,7 +30,7 @@
   <% @users.each do |user| %>
     <tr>
       <td class="future">
-        <%= user.name %>
+        <%= link_to user.name, month_path(year: @now.year, month: @now.strftime('%B'), user_id: user.id) %>
         <% if user != current_user && @teams.length > 1 %>
           (<%= user.teams.select { |t| @teams.include?(t) }.map(&:name).join(', ') %>)
         <% end %>
